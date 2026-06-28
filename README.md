@@ -1,25 +1,28 @@
 -- ============================================================
--- MINI-WAR HUB | Batman Script
--- ============================================================
--- CONFIG: แก้ตรงนี้ได้เลย
+-- MINI-WAR  | Batman Script
 -- ============================================================
 getgenv().MiniWarConfig = getgenv().MiniWarConfig or {
     -- =================== [ Auto Buy ] ===================
-    AutoBuy      = true, -- true = เปิด auto buy
-    BuyInterval  = 15,     -- วินาทีระหว่างซื้อแต่ละรอบ
+    AutoBuy     = true,
+    BuyInterval = 10,
 
-    BuyItems = {          -- ชื่อ item ที่ต้องการซื้อ
-        "Data Center",
-        "Blackhole Generator",
-        "Area51Lab",
+    BuyItems = {
+        -- Farm
+		"Wheat Farm",
+        -- "Corn Farm",
+        -- "Data Center",
+		"Blackhole Generator",
+		"Area51Lab",
         -- "AntimatterReactor",
         -- "QuantumCoreGenerator",
         -- "SupernovaAccelerator",
+        -- Military
         -- "Artillery Depot",
-        "Rocket Bunker",
-        "MechStation",
+        -- "Rocket Bunker",
+		"MechStation",
         -- "SpiderBase",
         -- "AirFortress",
+        -- Black Market
         "GemMine",
         -- "TransportPad",
         -- "ConstructionSpecial",
@@ -28,49 +31,39 @@ getgenv().MiniWarConfig = getgenv().MiniWarConfig or {
     },
 
     -- =================== [ Auto Attack ] ===================
-    AutoAttack   = true, -- true = เปิด auto attack
-    AttackDelay  = 120,    -- วินาทีก่อนไป target ถัดไป
-    ArmyIndex    = 1,     -- army index ที่ใช้โจมตี
+    AutoAttack  = true,
+    AttackDelay = 100,
+    ArmyIndex   = 1,
 
-    PriorityQueue = {     -- target ตามลำดับที่ต้องการโจมตี
-		"Special",
+    PriorityQueue = {
+        "Special",
         "MilitaryTown/Town",
         "Laboratory/Laboratory",
-        "Laboratory/Laboratory1",
-        "Laboratory/Laboratory2",
+		"Laboratory/Laboratory1",
+		"Laboratory/Laboratory2",
         "MilitaryBase/MilitaryBase1",
         "MilitaryBase/MilitaryBase2",
-        "MilitaryBase/MilitaryBase3",
-        "MilitaryBase/MilitaryBase4",
-        "WaterRigs/WaterRig1",
-        -- "Bandit/Garnison1",
-        -- "Bandit/Garnison2",
-        -- "MilitaryBase/MilitaryBase1",
+		"MilitaryBase/MilitaryBase3",
+		"MilitaryBase/MilitaryBase4",
     },
 
     -- =================== [ Webhook ] ===================
-    WebhookUrl     = "https://discord.com/api/webhooks/1520139298605891765/eGYUxALsSWLiKmKkZZOnmxEjY58SWNq36NwZ_QMEHAHCH6rZ4J6Iwj4R9aGgX7EweKi0", -- Discord webhook URL
+    WebhookUrl     = "https://discord.com/api/webhooks/1520139298605891765/eGYUxALsSWLiKmKkZZOnmxEjY58SWNq36NwZ_QMEHAHCH6rZ4J6Iwj4R9aGgX7EweKi0",
     WebhookEnabled = true,
 }
 
 -- ============================================================
-local HttpService    = game:GetService("HttpService")
+local HttpService       = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players        = game:GetService("Players")
-local RunService     = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+local Players           = game:GetService("Players")
+local RunService        = game:GetService("RunService")
+local UserInputService  = game:GetService("UserInputService")
 
-local LocalPlayer  = Players.LocalPlayer
-local HttpRequest  = request or http_request or (syn and syn.request)
+local LocalPlayer = Players.LocalPlayer
+local HttpRequest = request or http_request or (syn and syn.request)
 assert(HttpRequest, "No HTTP support")
 
 local Config = getgenv().MiniWarConfig
-
--- convert BuyItems array -> set
-local buyItemsSet = {}
-for _, name in ipairs(Config.BuyItems or {}) do
-    buyItemsSet[name] = true
-end
 
 local function fetch(url)
     local ok, res = pcall(function()
@@ -134,33 +127,45 @@ Tabs.Log:AddButton({ Title = "Clear Log", Callback = function()
 end })
 
 -- ============================================================
--- BUY DATA
+-- BUY DATA (code ดักมาจาก remote)
 -- ============================================================
 local BuyItems = {
-    ["Data Center"]          = { shop = "Farm",        code = "\031" },
-    ["Blackhole Generator"]  = { shop = "Farm",        code = "\031" },
-    ["Area51Lab"]            = { shop = "Farm",        code = "\031" },
-    ["AntimatterReactor"]    = { shop = "Farm",        code = "\031" },
-    ["QuantumCoreGenerator"] = { shop = "Farm",        code = "\031" },
-    ["SupernovaAccelerator"] = { shop = "Farm",        code = "\031" },
-    ["Artillery Depot"]      = { shop = "Military",    code = "\031" },
-    ["Rocket Bunker"]        = { shop = "Military",    code = "\031" },
-    ["MechStation"]          = { shop = "Military",    code = "\031" },
-    ["SpiderBase"]           = { shop = "Military",    code = "\031" },
-    ["AirFortress"]          = { shop = "Military",    code = "\031" },
-    ["GemMine"]              = { shop = "BlackMarket", code = "M"    },
-    ["TransportPad"]         = { shop = "BlackMarket", code = "M"    },
-    ["ConstructionSpecial"]  = { shop = "BlackMarket", code = "M"    },
-    ["CloneFacility"]        = { shop = "BlackMarket", code = "M"    },
-    ["CloneFacilityV2"]      = { shop = "BlackMarket", code = "M"    },
+    -- Farm (code = " ")
+    ["Wheat Farm"]           = { item = "FarmWheat",             shop = "Farm",        code = " " },
+    ["Corn Farm"]            = { item = "FarmCorn",              shop = "Farm",        code = " " },
+    ["Data Center"]          = { item = "Data Center",           shop = "Farm",        code = " " },
+    ["Blackhole Generator"]  = { item = "Blackhole Generator",   shop = "Farm",        code = " " },
+    ["Area51Lab"]            = { item = "Area51Lab",             shop = "Farm",        code = " " },
+    ["AntimatterReactor"]    = { item = "AntimatterReactor",     shop = "Farm",        code = " " },
+    ["QuantumCoreGenerator"] = { item = "QuantumCoreGenerator",  shop = "Farm",        code = " " },
+    ["SupernovaAccelerator"] = { item = "SupernovaAccelerator",  shop = "Farm",        code = " " },
+    -- Military (code = " ")
+    ["Artillery Depot"]      = { item = "Artillery Depot",       shop = "Military",    code = " " },
+    ["Rocket Bunker"]        = { item = "Rocket Bunker",         shop = "Military",    code = " " },
+    ["MechStation"]          = { item = "MechStation",           shop = "Military",    code = " " },
+    ["SpiderBase"]           = { item = "SpiderBase",            shop = "Military",    code = " " },
+    ["AirFortress"]          = { item = "AirFortress",           shop = "Military",    code = " " },
+    -- Black Market (ต้องดักมาเพิ่ม ใส่ " " ไว้ก่อน)
+    ["GemMine"]              = { item = "GemMine",               shop = "BlackMarket", code = " " },
+    ["TransportPad"]         = { item = "TransportPad",          shop = "BlackMarket", code = " " },
+    ["ConstructionSpecial"]  = { item = "ConstructionSpecial",   shop = "BlackMarket", code = " " },
+    ["CloneFacility"]        = { item = "CloneFacility",         shop = "BlackMarket", code = " " },
+    ["CloneFacilityV2"]      = { item = "CloneFacilityV2",       shop = "BlackMarket", code = " " },
 }
 
 local BuyItemNames = {
+    "Wheat Farm","Corn Farm",
     "Data Center","Blackhole Generator","Area51Lab","AntimatterReactor",
-    "QuantumCoreGenerator","SupernovaAccelerator","Artillery Depot",
-    "Rocket Bunker","MechStation","SpiderBase","AirFortress",
+    "QuantumCoreGenerator","SupernovaAccelerator",
+    "Artillery Depot","Rocket Bunker","MechStation","SpiderBase","AirFortress",
     "GemMine","TransportPad","ConstructionSpecial","CloneFacility","CloneFacilityV2"
 }
+
+-- convert config array -> set
+local buyItemsSet = {}
+for _, name in ipairs(Config.BuyItems or {}) do
+    buyItemsSet[name] = true
+end
 
 -- ============================================================
 -- WEBHOOK
@@ -195,28 +200,34 @@ end
 -- ============================================================
 local buyLoopRunning = false
 
-local function buyItem(itemName)
-    local data = BuyItems[itemName]
-    if not data then addLog("❌ Unknown item: " .. itemName) return end
-    local ok, err = pcall(fireBridge, { item = itemName, shop = data.shop }, data.code)
+local function buyItem(displayName)
+    local data = BuyItems[displayName]
+    if not data then
+        addLog("❌ Unknown item: " .. displayName)
+        return
+    end
+    local ok, err = pcall(fireBridge, { item = data.item, shop = data.shop }, data.code)
     if ok then
-        addLog("🛒 Bought: " .. itemName .. " [" .. data.shop .. "]")
-        sendWebhook(itemName, data.shop)
+        addLog("🛒 Bought: " .. displayName .. " [" .. data.shop .. "]")
+        sendWebhook(displayName, data.shop)
     else
         addLog("❌ Buy error: " .. tostring(err))
     end
 end
 
 local function buyAllSelected()
-    local count = 0
-    -- ซื้อจาก buyItemsSet (config) + UI toggle
     local merged = {}
-    for name in pairs(buyItemsSet) do merged[name] = true end
+    -- จาก config
+    for name, state in pairs(buyItemsSet) do
+        if state then merged[name] = true end
+    end
+    -- จาก UI dropdown
     if Options.BuyItem and Options.BuyItem.Value then
         for name, state in pairs(Options.BuyItem.Value) do
             if state then merged[name] = true end
         end
     end
+    local count = 0
     for name in pairs(merged) do
         buyItem(name)
         count += 1
@@ -237,7 +248,6 @@ Tabs.Main:AddDropdown("BuyItem", {
     Multi       = true,
     Default     = {},
 }):OnChanged(function(value)
-    -- merge กับ config
     for name, state in pairs(value) do
         buyItemsSet[name] = state
     end
@@ -313,7 +323,6 @@ local selectedTarget    = TargetNames[1]
 local attackLoopRunning = false
 local priorityQueue     = {}
 
--- โหลด queue จาก config
 for _, name in ipairs(Config.PriorityQueue or {}) do
     table.insert(priorityQueue, name)
 end
@@ -328,7 +337,7 @@ local function resolveTargets(targetName)
     if not root then addLog("❌ MilitaryMap not found") return {} end
     if targetName == "Special" then
         local folder = root:FindFirstChild("Special")
-        if not folder then return {} end
+        if not folder then addLog("❌ Special not found") return {} end
         local t = {}
         for _, c in ipairs(folder:GetChildren()) do table.insert(t, c) end
         return t
@@ -346,10 +355,15 @@ end
 local function attackTarget(targetName)
     local targets = resolveTargets(targetName)
     if #targets == 0 then addLog("⚠️ No target: " .. targetName) return end
+    -- Special ใช้ code "^" ที่เหลือใช้ "V"
+    local code = targetName == "Special" and "^" or "V"
     for _, target in ipairs(targets) do
-        local ok, err = pcall(fireBridge, { armyIndex = Config.ArmyIndex, capturePoint = target }, "V")
+        local ok, err = pcall(fireBridge, {
+            armyIndex    = Config.ArmyIndex,
+            capturePoint = target
+        }, code)
         if ok then
-            addLog("⚔️ Attack: " .. targetName .. " [army " .. Config.ArmyIndex .. "]")
+            addLog("⚔️ Attack: " .. target.Name .. " [army " .. Config.ArmyIndex .. "] code:" .. code)
         else
             addLog("❌ Attack error: " .. tostring(err))
         end
@@ -377,9 +391,9 @@ end
 refreshQueue()
 
 Tabs.Main:AddDropdown("AttackTarget", {
-    Title  = "Target",
-    Values = TargetNames,
-    Multi  = false,
+    Title   = "Target",
+    Values  = TargetNames,
+    Multi   = false,
     Default = 1,
 }):OnChanged(function(v) selectedTarget = v end)
 
@@ -467,6 +481,8 @@ end)
 -- ============================================================
 Tabs.Player:AddSection("Movement")
 
+local walkSpeed      = 16
+local flySpeed       = 60
 local noclipOriginal = setmetatable({}, { __mode = "k" })
 local flyObjects     = {}
 local flyKeys        = { W=false, A=false, S=false, D=false, Space=false, Ctrl=false }
@@ -474,9 +490,6 @@ local flyKeys        = { W=false, A=false, S=false, D=false, Space=false, Ctrl=f
 local function getChar()  return LocalPlayer.Character end
 local function getHuman() local c = getChar() return c and c:FindFirstChildOfClass("Humanoid") end
 local function getRoot()  local c = getChar() return c and c:FindFirstChild("HumanoidRootPart") end
-
-local walkSpeed = 16
-local flySpeed  = 60
 
 Tabs.Player:AddToggle("WalkSpeedEnabled", { Title = "Custom WalkSpeed", Default = false })
 Tabs.Player:AddSlider("WalkSpeedValue", {
@@ -617,11 +630,11 @@ Tabs.Config:AddToggle("WebhookEnabled", {
     Default = Config.WebhookEnabled,
 }):OnChanged(function(v) Config.WebhookEnabled = v end)
 
-Tabs.Config:AddSection("Config Info")
+Tabs.Config:AddSection("Info")
 
 Tabs.Config:AddParagraph({
-    Title   = "วิธีใช้ getgenv() config",
-    Content = "วางก่อนรัน script:\n\ngetgenv().MiniWarConfig = {\n  AutoBuy = true,\n  BuyInterval = 3,\n  BuyItems = {\n    \"GemMine\",\n    \"Data Center\",\n  },\n  AutoAttack = true,\n  AttackDelay = 20,\n  ArmyIndex = 2,\n  PriorityQueue = {\n    \"Bandit/Garnison1\",\n    \"WaterRigs/WaterRig1\",\n  },\n}"
+    Title   = "getgenv() Config Example",
+    Content = "getgenv().MiniWarConfig = {\n  AutoBuy = true,\n  BuyInterval = 3,\n  BuyItems = {\n    \"Wheat Farm\",\n    \"GemMine\",\n  },\n  AutoAttack = true,\n  AttackDelay = 20,\n  ArmyIndex = 1,\n  PriorityQueue = {\n    \"Special\",\n    \"MilitaryTown/Town\",\n  },\n}"
 })
 
 Tabs.Config:AddButton({
@@ -637,7 +650,7 @@ Tabs.Config:AddButton({
                 print(k .. " = " .. tostring(v))
             end
         end
-        addLog("📄 Config printed to console")
+        addLog("📄 Config printed")
     end
 })
 
@@ -645,7 +658,7 @@ Tabs.Config:AddButton({
     Title    = "Reset Config",
     Callback = function()
         getgenv().MiniWarConfig = nil
-        addLog("🔄 Config reset, re-run script")
+        addLog("🔄 Reset done, re-run script")
         Fluent:Notify({ Title = "Config", Content = "Reset done, re-run script", Duration = 4 })
     end
 })
@@ -665,18 +678,20 @@ SaveManager:BuildConfigSection(Tabs.Config)
 Window:SelectTab(1)
 
 Fluent:Notify({ Title = "Mini-War Hub", Content = "✅ Loaded", Duration = 4 })
-addLog("✅ Script loaded")
-addLog("📦 Queue loaded: " .. #priorityQueue .. " targets")
+addLog("✅ Loaded")
+addLog("📦 Queue: " .. #priorityQueue .. " targets")
 
 local buyList = {}
 for name in pairs(buyItemsSet) do table.insert(buyList, name) end
 addLog("🛒 Buy items: " .. (#buyList > 0 and table.concat(buyList, ", ") or "none"))
 
 -- auto start จาก config
-if Config.AutoBuy and not buyLoopRunning then
+if Config.AutoBuy then
+    task.wait(0.5)
     Options.AutoBuy:SetValue(true)
 end
-if Config.AutoAttack and not attackLoopRunning then
+if Config.AutoAttack then
+    task.wait(0.5)
     Options.AutoAttack:SetValue(true)
 end
 
