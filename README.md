@@ -2,6 +2,17 @@ local PLACE_ID = 131346454575416
 
 if game.PlaceId ~= PLACE_ID then
     print("[Wave] Wrong game! Expected: " .. PLACE_ID .. " | Got: " .. game.PlaceId)
+	wait(1)
+	local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+
+for _, v in ipairs(lp.PlayerGui:GetDescendants()) do
+    if v:IsA("TextButton") and string.find(string.upper(v.Text), "AFK") then
+        firesignal(v.MouseButton1Click)
+        break
+    end
+end
+wait(3)
 	local TeleportService = game:GetService("TeleportService")
 
 local targetPlaceId = 5411459567
