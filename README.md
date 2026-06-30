@@ -55,7 +55,7 @@ getgenv().MiniWarConfig = getgenv().MiniWarConfig or {
         -- "SupernovaAccelerator",
         -- Military
         -- "Artillery Depot",
-        -- "Rocket Bunker",
+        "Rocket Bunker",
 		"MechStation",
         -- "SpiderBase",
         -- "AirFortress",
@@ -64,7 +64,7 @@ getgenv().MiniWarConfig = getgenv().MiniWarConfig or {
         -- "TransportPad",
         -- "ConstructionSpecial",
         -- "CloneFacility",
-        -- "CloneFacilityV2",
+        "CloneFacilityV2",
     },
 
     -- =================== [ Auto Attack ] ===================
