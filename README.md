@@ -56,7 +56,7 @@ getgenv().MiniWarConfig = getgenv().MiniWarConfig or {
         -- Military
         -- "Artillery Depot",
         "Rocket Bunker",
-		"MechStation",
+		-- "MechStation",
         -- "SpiderBase",
         -- "AirFortress",
         -- Black Market
