@@ -1,34 +1,8 @@
 local PLACE_ID = 131346454575416
 
 if game.PlaceId ~= PLACE_ID then
-    print("[Wave] Wrong game! Expected: " .. PLACE_ID .. " | Got: " .. game.PlaceId)
-	wait(1)
-	local Players = game:GetService("Players")
-local lp = Players.LocalPlayer
-
-for _, v in ipairs(lp.PlayerGui:GetDescendants()) do
-    if v:IsA("TextButton") and string.find(string.upper(v.Text), "AFK") then
-        firesignal(v.MouseButton1Click)
-        break
-    end
-end
-wait(3)
-	local TeleportService = game:GetService("TeleportService")
-
-local targetPlaceId = 5411459567
-
-if game.PlaceId ~= targetPlaceId then
-    TeleportService:Teleport(targetPlaceId)
-else
-    warn("Already in AFK World")
-end
-wait(0.1)
-	warn("Anti afk running")
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-warn("Anti afk ran")
-game:GetService("VirtualUser"):CaptureController()
-game:GetService("VirtualUser"):ClickButton2(Vector2.new())
-end)
+    if not game:IsLoaded() then repeat game.Loaded:Wait() until game:IsLoaded() end
+loadstring(game:HttpGet("https://raw.githubusercontent.com/bonusking007/aba-public-main/refs/heads/main/README.md"))()
 
     return
 end
